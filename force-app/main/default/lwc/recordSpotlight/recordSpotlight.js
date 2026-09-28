@@ -1,8 +1,8 @@
 import { LightningElement, api } from 'lwc';
 import { NavigationMixin } from 'lightning/navigation';
-import getCurrentRecord from '@salesforce/apex/CurrentRecordHighlightsController.getCurrentRecord';
+import getCurrentRecord from '@salesforce/apex/RecordSpotlightController.getCurrentRecord';
 
-export default class CurrentRecordHighlights extends NavigationMixin(LightningElement) {
+export default class RecordSpotlight extends NavigationMixin(LightningElement) {
     _recordId;
     _sourceObjectApiName;
     _parentLookupFieldApiName;

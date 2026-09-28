@@ -239,7 +239,7 @@ sf project deploy start \
   --source-dir force-app/main/default \
   --target-org YOUR_ORG_ALIAS \
   --test-level RunSpecifiedTests \
-  --tests CurrentRecordHighlightsController_Test \
+  --tests RecordSpotlightController_Test \
   --wait 30
 ```
 
@@ -251,7 +251,7 @@ Users need access to:
 - the current-record checkbox field
 - fields included in the Field Set
 - the parent lookup field when parent-aware filtering is used
-- `CurrentRecordHighlightsController`
+- `RecordSpotlightController`
 
 Grant Apex Class Access through the appropriate Profile or Permission Set.
 
@@ -330,11 +330,11 @@ standard:event
 ```text
 Lightning Page
       ↓
-currentRecordHighlights
+recordSpotlight
       ↓
 Imperative Apex Request
       ↓
-CurrentRecordHighlightsController
+RecordSpotlightController
       ↓
 Dynamic Schema Validation
       ↓
@@ -360,16 +360,16 @@ The query retrieves at most two matching records. This is enough to distinguish 
 ```text
 force-app/main/default/
 ├── classes/
-│   ├── CurrentRecordHighlightsController.cls
-│   ├── CurrentRecordHighlightsController.cls-meta.xml
-│   ├── CurrentRecordHighlightsController_Test.cls
-│   └── CurrentRecordHighlightsController_Test.cls-meta.xml
+│   ├── RecordSpotlightController.cls
+│   ├── RecordSpotlightController.cls-meta.xml
+│   ├── RecordSpotlightController_Test.cls
+│   └── RecordSpotlightController_Test.cls-meta.xml
 ├── lwc/
-│   └── currentRecordHighlights/
-│       ├── currentRecordHighlights.css
-│       ├── currentRecordHighlights.html
-│       ├── currentRecordHighlights.js
-│       └── currentRecordHighlights.js-meta.xml
+│   └── recordSpotlight/
+│       ├── recordSpotlight.css
+│       ├── recordSpotlight.html
+│       ├── recordSpotlight.js
+│       └── recordSpotlight.js-meta.xml
 └── objects/
     └── Contact/
         └── fieldSets/

@@ -2,7 +2,7 @@
 <LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata">
     <apiVersion>65.0</apiVersion>
     <isExposed>true</isExposed>
-    <masterLabel>Current Record Highlights</masterLabel>
+    <masterLabel>Record Spotlight</masterLabel>
 
     <targets>
         <target>lightning__HomePage</target>

@@ -1,4 +1,4 @@
-public with sharing class CurrentRecordHighlightsController {
+public with sharing class RecordSpotlightController {
 
     public class HighlightField {
         @AuraEnabled

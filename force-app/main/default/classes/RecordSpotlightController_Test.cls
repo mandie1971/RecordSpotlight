@@ -1,5 +1,5 @@
 @IsTest
-private class CurrentRecordHighlightsController_Test {
+private class RecordSpotlightController_Test {
 
     private static final String OBJECT_API_NAME =
         'Contact';
@@ -22,8 +22,8 @@ private class CurrentRecordHighlightsController_Test {
 
         Test.startTest();
 
-        CurrentRecordHighlightsController.HighlightResult result =
-            CurrentRecordHighlightsController.getCurrentRecord(
+        RecordSpotlightController.HighlightResult result =
+            RecordSpotlightController.getCurrentRecord(
                 OBJECT_API_NAME,
                 CURRENT_FIELD,
                 FIELD_SET,
@@ -66,8 +66,8 @@ private class CurrentRecordHighlightsController_Test {
 
         Test.startTest();
 
-        CurrentRecordHighlightsController.HighlightResult result =
-            CurrentRecordHighlightsController.getCurrentRecord(
+        RecordSpotlightController.HighlightResult result =
+            RecordSpotlightController.getCurrentRecord(
                 OBJECT_API_NAME,
                 CURRENT_FIELD,
                 FIELD_SET,
@@ -88,7 +88,7 @@ private class CurrentRecordHighlightsController_Test {
         Boolean exceptionThrown = false;
 
         try {
-            CurrentRecordHighlightsController.getCurrentRecord(
+            RecordSpotlightController.getCurrentRecord(
                 'Not_A_Real_Object__c',
                 CURRENT_FIELD,
                 FIELD_SET,
@@ -111,7 +111,7 @@ private class CurrentRecordHighlightsController_Test {
         Boolean exceptionThrown = false;
 
         try {
-            CurrentRecordHighlightsController.getCurrentRecord(
+            RecordSpotlightController.getCurrentRecord(
                 OBJECT_API_NAME,
                 'Not_A_Field__c',
                 FIELD_SET,
@@ -134,7 +134,7 @@ private class CurrentRecordHighlightsController_Test {
         Boolean exceptionThrown = false;
 
         try {
-            CurrentRecordHighlightsController.getCurrentRecord(
+            RecordSpotlightController.getCurrentRecord(
                 OBJECT_API_NAME,
                 'LastName',
                 FIELD_SET,
@@ -157,7 +157,7 @@ private class CurrentRecordHighlightsController_Test {
         Boolean exceptionThrown = false;
 
         try {
-            CurrentRecordHighlightsController.getCurrentRecord(
+            RecordSpotlightController.getCurrentRecord(
                 OBJECT_API_NAME,
                 CURRENT_FIELD,
                 'Not_A_Field_Set',
@@ -193,7 +193,7 @@ private class CurrentRecordHighlightsController_Test {
         Test.startTest();
 
         try {
-            CurrentRecordHighlightsController.getCurrentRecord(
+            RecordSpotlightController.getCurrentRecord(
                 OBJECT_API_NAME,
                 CURRENT_FIELD,
                 FIELD_SET,
@@ -251,8 +251,8 @@ private class CurrentRecordHighlightsController_Test {
 
         Test.startTest();
 
-        CurrentRecordHighlightsController.HighlightResult result =
-            CurrentRecordHighlightsController.getCurrentRecord(
+        RecordSpotlightController.HighlightResult result =
+            RecordSpotlightController.getCurrentRecord(
                 OBJECT_API_NAME,
                 CURRENT_FIELD,
                 FIELD_SET,
@@ -290,8 +290,8 @@ private class CurrentRecordHighlightsController_Test {
 
         Test.startTest();
 
-        CurrentRecordHighlightsController.HighlightResult result =
-            CurrentRecordHighlightsController.getCurrentRecord(
+        RecordSpotlightController.HighlightResult result =
+            RecordSpotlightController.getCurrentRecord(
                 OBJECT_API_NAME,
                 CURRENT_FIELD,
                 FIELD_SET,
@@ -319,7 +319,7 @@ private class CurrentRecordHighlightsController_Test {
         Boolean exceptionThrown = false;
 
         try {
-            CurrentRecordHighlightsController.getCurrentRecord(
+            RecordSpotlightController.getCurrentRecord(
                 OBJECT_API_NAME,
                 CURRENT_FIELD,
                 FIELD_SET,
@@ -349,7 +349,7 @@ private class CurrentRecordHighlightsController_Test {
         Boolean exceptionThrown = false;
 
         try {
-            CurrentRecordHighlightsController.getCurrentRecord(
+            RecordSpotlightController.getCurrentRecord(
                 OBJECT_API_NAME,
                 CURRENT_FIELD,
                 FIELD_SET,
@@ -372,7 +372,7 @@ private class CurrentRecordHighlightsController_Test {
         Boolean exceptionThrown = false;
 
         try {
-            CurrentRecordHighlightsController.getCurrentRecord(
+            RecordSpotlightController.getCurrentRecord(
                 OBJECT_API_NAME,
                 CURRENT_FIELD,
                 FIELD_SET,
@@ -417,7 +417,7 @@ private class CurrentRecordHighlightsController_Test {
         Test.startTest();
 
         try {
-            CurrentRecordHighlightsController.getCurrentRecord(
+            RecordSpotlightController.getCurrentRecord(
                 OBJECT_API_NAME,
                 CURRENT_FIELD,
                 FIELD_SET,
