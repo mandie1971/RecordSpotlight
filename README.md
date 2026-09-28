@@ -1,136 +1,99 @@
 # Current Record Highlights
 
-A configurable Salesforce Lightning Web Component that displays the record that matters **right now**.
+A configurable Salesforce Lightning Web Component that surfaces the record that matters **right now**.
 
-Current Record Highlights lets Salesforce admins surface a single current or active record on a Home Page, App Page, or Record Page without hard-coding an object, fields, or business process into the component.
+Choose the object, define what makes a record current, choose a Field Set, and place the component wherever users need the context.
 
-Configure the object, tell the component how your org identifies the current record, choose a Field Set, and you're done.
+No object-specific business logic is hard-coded into the component.
 
-On Record Pages, the component can also limit the search to records related to the record you're currently viewing.
+## See It in Action
 
-## What It Does
+### Context-Aware Record Page
 
-At its simplest:
+On a Record Page, Current Record Highlights can find the current child record related to the record being viewed.
 
-```text
-Current Record?
-      ↓
-Checkbox / Formula Checkbox = TRUE
-      ↓
-Current Record Highlights
-      ↓
-Fields defined by your Field Set
-```
+![Current Record Highlights displaying an active Call Cycle on a Program Cohort record](images/current-record-highlights-record-page.png)
 
-On a Record Page, you can optionally add parent context:
+### Global App or Home Page
 
-```text
-Current Record?
-      ↓
-Checkbox / Formula Checkbox = TRUE
-      +
-Related to THIS page record?
-      ↓
-Current Record Highlights
-      ↓
-Fields defined by your Field Set
-```
+Leave **Parent Lookup Field** blank to surface the globally current record on an App Page or Home Page.
 
-That means the same component can support very different use cases without changing the code.
+![Current Record Highlights displaying a global current record on an App Page](images/current-record-highlights-app-page.png)
 
-Examples include:
+### Responsive Lightning Layouts
+
+The component responds to the space Salesforce gives it — including narrow page regions.
+
+![Current Record Highlights displayed in a narrow Lightning Record Page region](images/current-record-highlights-responsive-layout.png)
+
+Fields automatically reflow based on the component's available width rather than the browser viewport.
+
+## What "Current" Means Is Up to You
+
+The determining field can be any **Checkbox or Formula (Checkbox)**. It does not have to literally mean "current."
+
+Use it for things like:
 
 - Current program cycle
 - Active contract
 - Current fiscal period
+- Primary contact
 - Current grant period
 - Active membership
-- Current campaign phase
-- Current service plan
-- Current semester
 - Current project phase
-- Current strategic plan
 
-If your Salesforce data can identify **the record that is current**, the component can display it.
-
----
-
-## Features
-
-- Works with custom and standard objects
-- Supports Home Pages, App Pages, and Record Pages
-- Uses a Checkbox or Formula (Checkbox) field to identify the current record
-- Uses a Field Set to control which fields are displayed
-- Preserves the field order defined in the Field Set
-- Supports optional parent-aware filtering on Record Pages
-- Displays the current record name as a clickable link
-- Supports text, number, currency, and percent formatting
-- Supports Salesforce hyperlink formulas
-- Optional heading
-- Optional Salesforce Lightning icon
-- Optional accent color
-- Automatically creates a lighter body color from the configured accent
-- Automatically chooses readable light or dark header text
-- No object-specific business logic in the component
-
----
-
-## Global vs. Parent-Aware Current Records
-
-Current Record Highlights supports two useful patterns.
-
-### Global Current Record
-
-Use this on a Home Page, App Page, or anywhere there is one current record for the entire organization.
-
-For example:
-
-```text
-Fiscal_Period__c
-Current__c = TRUE
-```
-
-Leave **Parent Lookup Field** blank.
-
-The component finds the record where:
-
-```text
-Current__c = TRUE
-```
-
-### Current Record for This Record
-
-On a Lightning Record Page, you can also tell the component which lookup on the source object points back to the page record.
-
-For example, imagine:
-
-```text
-Program__c
-    ↓
-Program_Cycle__c
-```
-
-`Program_Cycle__c` contains:
-
-```text
-Current__c
-Program__c
-```
-
-Configure:
+For example, the component can use `Contact.Primary_Contact__c` on an Account page:
 
 ```text
 Object API Name:
-Program_Cycle__c
+Contact
 
 Parent Lookup Field:
-Program__c
+AccountId
 
 Checkbox Field That Determines Current Record:
-Current__c
+Primary_Contact__c
+
+Field Set to Display:
+Primary_Contact_Display
 ```
 
-When viewing a Program, the component effectively looks for:
+The component then displays the Contact marked as Primary Contact for the Account being viewed.
+
+## Features
+
+- Standard and custom objects
+- Home Pages, App Pages, and Record Pages
+- Checkbox or Formula (Checkbox) determines the record
+- Field Set determines the displayed fields and their order
+- Optional parent-aware filtering on Record Pages
+- Clickable record navigation
+- Text, number, currency, and percent formatting
+- Salesforce formula hyperlinks
+- Optional heading and Lightning icon
+- Optional accent color with automatically generated body and divider colors
+- Responsive field layout based on available component width
+- No object-specific production logic
+
+## Global vs. Parent-Aware
+
+### Global
+
+Leave **Parent Lookup Field** blank.
+
+The component finds a record where:
+
+```text
+Current__c = TRUE
+```
+
+This is useful on Home Pages and App Pages.
+
+### Parent-Aware
+
+On a Record Page, configure the lookup on the source object that points to the page record.
+
+For example:
 
 ```text
 Program_Cycle__c
@@ -138,39 +101,27 @@ WHERE Current__c = TRUE
 AND Program__c = current Program
 ```
 
-This allows different parent records to have different current child records while using the same component.
-
----
+This allows each parent record to have its own current child record.
 
 ## Configuration
 
-Add **Current Record Highlights** to a Lightning page in Lightning App Builder.
-
-The following properties are available.
+Add **Current Record Highlights** in Lightning App Builder.
 
 | Property | Required | Description |
 |---|---|---|
-| Object API Name | Yes | API name of the object containing the record to display |
-| Parent Lookup Field | No | Lookup or Master-Detail field on the source object pointing to the current Record Page record |
-| Checkbox Field That Determines Current Record | Yes | Checkbox or Formula (Checkbox) field identifying the current record |
+| Object API Name | Yes | Object containing the record to display |
+| Parent Lookup Field | No | Lookup or Master-Detail field pointing to the current Record Page record |
+| Checkbox Field That Determines Current Record | Yes | Checkbox or Formula (Checkbox) identifying the record |
 | Field Set to Display | Yes | Field Set containing the fields to display |
-| Heading | No | Text displayed above the current record name |
-| Icon Name | No | Salesforce Lightning icon name, such as `standard:event` or `standard:call` |
+| Heading | No | Text above the clickable record name |
+| Icon Name | No | Lightning icon such as `standard:event`, `standard:call`, or `standard:contact` |
 | Accent Color | No | Hex color such as `#566B50` |
-
----
 
 ## Creating the Current Record Field
 
-The component does not decide what "current" means.
+The component does not decide what "current" means. **Your Salesforce configuration does.**
 
-**You do.**
-
-This is intentional because "current" means different things for different Salesforce implementations.
-
-A Formula (Checkbox) is often a simple way to define it.
-
-For a record with start and end dates:
+A date-driven Formula (Checkbox) might be:
 
 ```text
 AND(
@@ -179,152 +130,65 @@ AND(
 )
 ```
 
-The component will display the record where that formula evaluates to `TRUE`.
+Your configuration should identify **one record within the relevant scope**.
 
-You can use any Checkbox or Formula (Checkbox) field appropriate to your business process.
+If multiple records match, the controller returns one matching record. Design the determining field and parent relationship so only one record should evaluate as current.
 
-### Important
+## Field Set
 
-Your configuration should result in **one current record within the relevant scope**.
+Create a Field Set on the configured object and add the fields you want displayed.
 
-The component retrieves a single matching record. It is not intended to choose between multiple competing "current" records.
-
----
-
-## Creating the Field Set
-
-Create a Field Set on the object configured as **Object API Name**.
-
-Add the fields you want displayed.
-
-The component uses the Field Set to determine:
+The Field Set controls:
 
 - which fields appear
 - the order in which they appear
 
-This means an administrator can change the displayed fields later without modifying or redeploying the LWC.
-
----
+Admins can therefore change the displayed information without modifying the LWC.
 
 ## Styling
 
 ### Heading
 
-The heading is optional.
-
-For example:
+Optional text displayed above the clickable record name.
 
 ```text
-Active Contract:
+Active Call Cycle:
 ```
 
-If no heading is configured, only the clickable record name is displayed.
-
 ### Icon
-
-The icon is optional.
 
 Use a valid Salesforce Lightning Design System icon name, for example:
 
 ```text
+standard:call
+standard:contact
 standard:event
 ```
 
-or:
-
-```text
-standard:call
-```
-
-If no icon is configured, no icon space is reserved.
+Leave blank for no icon.
 
 ### Accent Color
 
-Enter a hexadecimal color such as:
+Enter a hex color such as:
 
 ```text
 #566B50
 ```
 
-The component uses the accent color for the header and border and automatically creates a lighter version for the body.
+The component automatically creates:
 
-Header text automatically switches between light and dark based on the configured color.
+- the header and outline color
+- a lighter body color
+- a darker divider color
+- readable light or dark header text
 
-If no valid accent color is supplied, the component uses its default Salesforce-style appearance.
+Leave blank for neutral styling.
 
----
+## Responsive Layout
 
-## Example Configurations
+Lightning page regions can be much narrower than the browser itself.
 
-### Current Fiscal Period on a Home Page
-
-```text
-Object API Name:
-Fiscal_Period__c
-
-Parent Lookup Field:
-[blank]
-
-Checkbox Field That Determines Current Record:
-Current__c
-
-Field Set to Display:
-Highlights
-
-Heading:
-Current Fiscal Period
-
-Icon Name:
-standard:event
-```
-
-### Active Contract on an Account
-
-```text
-Object API Name:
-Contract
-
-Parent Lookup Field:
-AccountId
-
-Checkbox Field That Determines Current Record:
-Current__c
-
-Field Set to Display:
-Contract_Highlights
-
-Heading:
-Active Contract
-```
-
-The component will display the current Contract related to the Account being viewed.
-
-### Current Program Cycle
-
-```text
-Object API Name:
-Program_Cycle__c
-
-Parent Lookup Field:
-Program__c
-
-Checkbox Field That Determines Current Record:
-Current__c
-
-Field Set to Display:
-Highlights
-
-Heading:
-Active Program Cycle:
-
-Icon Name:
-standard:call
-
-Accent Color:
-#566B50
-```
-
----
+Current Record Highlights uses an intrinsic grid that responds to the **actual width available to the component**, allowing fields to reflow naturally in full-width regions, columns, and sidebars.
 
 ## Supported Field Display
 
@@ -334,17 +198,29 @@ Current Record Highlights provides formatting for:
 - Numbers
 - Currency
 - Percentages
-- Salesforce hyperlink formulas
+- Salesforce formula hyperlinks
 
-Other field values fall back to standard text display.
+Other returned values fall back to text display.
 
----
+## Formula Hyperlinks
+
+Formula fields using Salesforce `HYPERLINK()` can be included in the Field Set and rendered as clickable links.
+
+Example:
+
+```text
+HYPERLINK(
+    "/" & Parent__c,
+    Parent__r.Name,
+    "_self"
+)
+```
 
 ## Installation
 
 Clone or download this repository.
 
-Authenticate the target Salesforce org with Salesforce CLI, then deploy the source:
+Authenticate the target Salesforce org with Salesforce CLI, then deploy:
 
 ```bash
 sf project deploy start \
@@ -355,37 +231,19 @@ sf project deploy start \
   --wait 30
 ```
 
-Replace:
-
-```text
-YOUR_ORG_ALIAS
-```
-
-with the alias for your target org.
-
----
-
 ## Permissions
 
-Users who view Current Record Highlights need access to:
+Users need access to:
 
 - the configured source object
-- the configured current-record checkbox field
-- the fields included in the configured Field Set
-- the configured parent lookup field, when parent-aware filtering is used
+- the current-record checkbox field
+- fields included in the Field Set
+- the parent lookup field when parent-aware filtering is used
 - `CurrentRecordHighlightsController`
 
-Grant Apex Class Access to:
-
-```text
-CurrentRecordHighlightsController
-```
-
-through the appropriate Profile or Permission Set.
+Grant Apex Class Access through the appropriate Profile or Permission Set.
 
 Normal Salesforce object and field security still applies.
-
----
 
 ## Test Metadata
 
@@ -395,112 +253,79 @@ The repository includes:
 Contact.Record_Comparison_Test
 ```
 
-This Field Set exists only to support the included Apex tests.
+This Field Set exists only to support the included Apex tests without requiring implementation-specific custom objects.
 
-The tests use standard Contact metadata so the component can be tested without requiring a custom object from a particular Salesforce implementation.
-
-### Do Not Call Field Access
+### Contact Do Not Call Access
 
 The test fixture uses the standard Contact `DoNotCall` checkbox.
 
-The user performing the deployment must have field-level access to **Contact → Do Not Call** when running the included tests.
+The deploying user must have field-level access to **Contact → Do Not Call** when running the included tests.
 
-If a deployment reports an error similar to:
+If deployment reports:
 
 ```text
 Operation failed due to fields being inaccessible on Sobject Contact
 ```
 
-verify that the deploying user has access to the standard Contact **Do Not Call** field.
+verify the deploying user's access to that standard field.
 
-This requirement affects the included test fixture; it is not a runtime dependency of the Current Record Highlights component.
-
----
+This is a test-fixture requirement, not a runtime dependency of Current Record Highlights.
 
 ## Troubleshooting
 
-### No current record is displayed
+### No current record appears
 
-Verify that:
+Verify:
 
-1. The Object API Name is correct.
-2. The configured current-record field exists on that object.
-3. The field is a Checkbox or Formula (Checkbox).
-4. A record currently evaluates to `TRUE`.
-5. The running user has access to the object and configured fields.
+1. Object API Name is correct.
+2. The determining field exists and is a Checkbox or Formula (Checkbox).
+3. A record evaluates to `TRUE`.
+4. The running user has access to the configured metadata.
 
-### A Record Page shows the wrong current record
+### Wrong record appears on a Record Page
 
-If the current record should be specific to the page record, configure **Parent Lookup Field**.
+If "current" should be specific to the page record, configure **Parent Lookup Field**.
 
-For example:
-
-```text
-Program_Cycle__c.Program__c
-```
-
-When the component is placed on a Program Record Page:
-
-```text
-Parent Lookup Field = Program__c
-```
-
-This restricts the result to the current Program.
-
-### No record appears after configuring Parent Lookup Field
+### Nothing appears after adding Parent Lookup Field
 
 Verify that:
 
 - the component is on a Record Page
-- the configured field is a Lookup or Master-Detail field
-- the lookup points to the type of record represented by the page
-- a related record has the current-record checkbox set to `TRUE`
+- the field is a Lookup or Master-Detail field
+- the lookup points to the page record
+- a related record evaluates to `TRUE`
 
-### The icon doesn't appear
+### Icon doesn't appear
 
-Verify that the configured value is a valid Salesforce Lightning Design System icon name.
-
-For example:
+Use a valid Lightning Design System icon name including its category, such as:
 
 ```text
 standard:event
 ```
 
-The icon name must include its category.
-
-### Percentages look wrong
-
-Salesforce stores and returns percentage values differently from the decimal format expected by the Lightning formatted-number component. Current Record Highlights accounts for this conversion automatically.
-
----
-
 ## Architecture
 
-The component consists of:
-
 ```text
+Lightning Page
+      ↓
 currentRecordHighlights
-        ↓
+      ↓
+Imperative Apex Request
+      ↓
 CurrentRecordHighlightsController
-        ↓
+      ↓
 Dynamic Schema Validation
-        ↓
+      ↓
 Dynamic SOQL
-        ↓
-Current Record
-        ↓
-Field Set Metadata
-        ↓
-Rendered Highlights
+      ↓
+Current Record + Field Set Metadata
+      ↓
+Responsive Highlights
 ```
 
-The Apex controller validates configured object, field, Field Set, and lookup metadata before constructing the query.
+The LWC loads the record imperatively so both Record Page context and global Home/App Page use work reliably.
 
-When parent-aware filtering is configured, the parent field must be a Salesforce `REFERENCE` field.
-
-No source object or business-specific field is hard-coded into the production component.
-
----
+The Apex controller validates the configured object, checkbox, Field Set, and optional parent lookup before constructing the query. A configured parent field must be a Salesforce `REFERENCE` field.
 
 ## Project Structure
 
@@ -523,53 +348,34 @@ force-app/main/default/
             └── Record_Comparison_Test.fieldSet-meta.xml
 ```
 
----
-
 ## Compatibility
 
-Current Record Highlights is built with:
-
-```text
-Salesforce API Version 65.0
-```
-
-It uses Lightning Web Components and Apex and is intended for Salesforce Lightning Experience.
+Built with Salesforce API Version **65.0** for Lightning Experience.
 
 The source has been successfully deployed and tested across unrelated Salesforce orgs.
 
----
-
 ## Design Philosophy
 
-Current Record Highlights intentionally separates three questions:
+Current Record Highlights separates three questions:
 
-**Which record matters?**
-
+**Which record matters?**  
 Your Checkbox or Formula (Checkbox) decides.
 
-**Which fields matter?**
-
+**Which fields matter?**  
 Your Field Set decides.
 
-**Where does it matter?**
-
+**Where does it matter?**  
 Lightning App Builder decides.
 
 The component just brings those decisions together.
 
----
-
 ## License
 
-This project is released under the MIT License.
-
-See `LICENSE` for details.
-
----
+Released under the MIT License. See `LICENSE`.
 
 ## Author
 
-Created by **mandie mcdougal**  
-agency llc
+Created by **mandie McDougal**  
+**agency llc**
 
 **Empowered. By Design.**
