@@ -22,11 +22,19 @@ Leave **Parent Lookup Field** blank to surface the globally current record on an
 
 ### Responsive Lightning Layouts
 
-The component responds to the space Salesforce gives it — including narrow page regions.
+### Responsive Lightning Layouts
 
-![Current Record Highlights displayed in a narrow Lightning Record Page region](images/current-record-highlights-responsive-layout.png)
+The component responds to the space Salesforce gives it — not the size of the browser window.
 
-Fields automatically reflow based on the component's available width rather than the browser viewport.
+In a wider Lightning page region:
+
+![Current Record Highlights displaying a Primary Contact in a wide Lightning page region](images/current-record-highlights-primary-contact.png)
+
+And in a narrow sidebar:
+
+![Current Record Highlights displaying a Primary Contact in a narrow Lightning page region](images/current-record-highlights-responsive-layout.png)
+
+The same component automatically reflows its fields based on the space available. No separate layout or component configuration is required.
 
 ## What "Current" Means Is Up to You
 
