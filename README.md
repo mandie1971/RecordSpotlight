@@ -1,4 +1,4 @@
-# Current Record Highlights
+# Record Spotlight
 
 A configurable Salesforce Lightning Web Component that surfaces the record that matters **right now**.
 
@@ -8,17 +8,23 @@ No object-specific business logic is hard-coded into the component.
 
 ## See It in Action
 
+Record Spotlight can surface the record that matters most wherever your users need it — including directly on a Home or App page, with no parent record required.
+
+Here, Grace Hopper is getting the recognition she deserves. 💜
+
+![Record Spotlight showing Grace Hopper as Employee of the Month on a Salesforce Home page](images/record-spotlight-home-page.png)
+
 ### Context-Aware Record Page
 
-On a Record Page, Current Record Highlights can find the current child record related to the record being viewed.
+On a Record Page, Record Spotlight can find the current child record related to the record being viewed.
 
-![Current Record Highlights displaying an active Call Cycle on a Program Cohort record](images/current-record-highlights-record-page.png)
+![Record Spotlight displaying an active Call Cycle on a Program Cohort record](images/current-record-highlights-record-page.png)
 
 ### Global App or Home Page
 
 Leave **Parent Lookup Field** blank to surface the globally current record on an App Page or Home Page.
 
-![Current Record Highlights displaying a global current record on an App Page](images/current-record-highlights-app-page.png)
+![Record Spotlight displaying a global current record on an App Page](images/current-record-highlights-app-page.png)
 
 ### Responsive Lightning Layouts
 
@@ -26,11 +32,11 @@ The component responds to the space Salesforce gives it — not the size of the 
 
 In a wider Lightning page region:
 
-![Current Record Highlights displaying a Primary Contact in a wide Lightning page region](images/current-record-highlights-primary-contact.png)
+![Record Spotlight displaying a Primary Contact in a wide Lightning page region](images/current-record-highlights-primary-contact.png)
 
 And in a narrow sidebar:
 
-![Current Record Highlights displaying a Primary Contact in a narrow Lightning page region](images/current-record-highlights-responsive-layout.png)
+![Record Spotlight displaying a Primary Contact in a narrow Lightning page region](images/current-record-highlights-responsive-layout.png)
 
 The same component automatically reflows its fields based on the space available. No separate layout or component configuration is required.
 
@@ -112,7 +118,7 @@ This allows each parent record to have its own current child record.
 
 ## Configuration
 
-Add **Current Record Highlights** in Lightning App Builder.
+Add **Record Spotlight** in Lightning App Builder.
 
 | Property | Required | Description |
 |---|---|---|
@@ -140,7 +146,7 @@ AND(
 > [!IMPORTANT]
 > Your configuration must allow **only one record within the relevant scope** to evaluate to `TRUE`.
 >
-> This applies whether the determining field is a formula or a manually maintained checkbox. If more than one record evaluates to `TRUE`, Current Record Highlights displays a configuration error instead of choosing a record arbitrarily.
+> This applies whether the determining field is a formula or a manually maintained checkbox. If more than one record evaluates to `TRUE`, Record Spotlight displays a configuration error instead of choosing a record arbitrarily.
 
 For a global component, that means only one matching record across the configured object.
 
@@ -156,6 +162,7 @@ The Field Set controls:
 - the order in which they appear
 
 Admins can therefore change the displayed information without modifying the LWC.
+> **Note:** Rich Text Area fields are displayed as text rather than rendered HTML. Because their underlying HTML markup may be visible, Rich Text Area fields are not recommended for the display Field Set.
 
 ## Styling
 
@@ -200,11 +207,11 @@ Leave blank for neutral styling.
 
 Lightning page regions can be much narrower than the browser itself.
 
-Current Record Highlights uses an intrinsic grid that responds to the **actual width available to the component**, allowing fields to reflow naturally in full-width regions, columns, and sidebars.
+Record Spotlight uses an intrinsic grid that responds to the **actual width available to the component**, allowing fields to reflow naturally in full-width regions, columns, and sidebars.
 
 ## Supported Field Display
 
-Current Record Highlights provides formatting for:
+Record Spotlight provides formatting for:
 
 - Text
 - Numbers
@@ -262,7 +269,7 @@ Normal Salesforce object and field security still applies.
 The repository includes:
 
 ```text
-Contact.Record_Comparison_Test
+Contact.Agency_Package_Test
 ```
 
 This Field Set exists only to support the included Apex tests without requiring implementation-specific custom objects.
@@ -281,7 +288,7 @@ Operation failed due to fields being inaccessible on Sobject Contact
 
 verify the deploying user's access to that standard field.
 
-This is a test-fixture requirement, not a runtime dependency of Current Record Highlights.
+This is a test-fixture requirement, not a runtime dependency of Record Spotlight.
 
 ## Troubleshooting
 
@@ -373,7 +380,7 @@ force-app/main/default/
 └── objects/
     └── Contact/
         └── fieldSets/
-            └── Record_Comparison_Test.fieldSet-meta.xml
+            └── Agency_Package_Test.fieldSet-meta.xml
 ```
 
 ## Compatibility
@@ -384,7 +391,7 @@ The source has been successfully deployed and tested across unrelated Salesforce
 
 ## Design Philosophy
 
-Current Record Highlights separates three questions:
+Record Spotlight separates three questions:
 
 **Which record matters?**  
 Your Checkbox or Formula (Checkbox) decides.
