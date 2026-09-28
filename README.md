@@ -22,8 +22,6 @@ Leave **Parent Lookup Field** blank to surface the globally current record on an
 
 ### Responsive Lightning Layouts
 
-### Responsive Lightning Layouts
-
 The component responds to the space Salesforce gives it — not the size of the browser window.
 
 In a wider Lightning page region:
