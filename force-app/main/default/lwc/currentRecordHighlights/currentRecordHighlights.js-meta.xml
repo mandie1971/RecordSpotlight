@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>65.0</apiVersion>
+    <isExposed>true</isExposed>
+    <masterLabel>Current Record Highlights</masterLabel>
+
+    <targets>
+        <target>lightning__HomePage</target>
+        <target>lightning__AppPage</target>
+        <target>lightning__RecordPage</target>
+    </targets>
+
+    <targetConfigs>
+        <targetConfig targets="lightning__HomePage,lightning__AppPage,lightning__RecordPage">
+
+            <property
+                name="sourceObjectApiName"
+                type="String"
+                label="Object API Name"
+                description="Enter the API name of the object containing the record to display. Example: Call_Cycle__c."
+            />
+
+            <property
+                name="parentLookupFieldApiName"
+                type="String"
+                label="Parent Lookup Field"
+                description="Optional. On a Record Page, enter the API name of the lookup on the source object that points to the page record. Example: Parent_Cohort__c. Leave blank on Home and App pages to find the current record globally."
+            />
+
+            <property
+                name="currentRecordFieldApiName"
+                type="String"
+                label="Checkbox Field That Determines Current Record"
+                description="Enter the API name of the Checkbox or Formula (Checkbox) field that identifies which record should be displayed. Exactly one record should evaluate to TRUE."
+            />
+
+            <property
+                name="fieldSetApiName"
+                type="String"
+                label="Field Set to Display"
+                description="Enter the API name of the Field Set containing the fields to display. Fields appear in the order defined in the Field Set."
+            />
+
+            <property
+                name="heading"
+                type="String"
+                label="Heading"
+                description="Optional text displayed above the clickable record name. Leave blank to display only the record name."
+            />
+
+            <property
+                name="iconName"
+                type="String"
+                label="Icon Name"
+                description="Optional Salesforce Lightning icon name. Example: standard:event. Leave blank to display no icon."
+            />
+
+            <property
+                name="backgroundColor"
+                type="String"
+                label="Accent Color"
+                description="Optional hex color used for the header, outline, and divider. The body is automatically displayed in a lighter shade. Example: #566B50."
+            />
+
+        </targetConfig>
+    </targetConfigs>
+</LightningComponentBundle>

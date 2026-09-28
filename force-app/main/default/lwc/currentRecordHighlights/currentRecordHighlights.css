@@ -1,0 +1,97 @@
+.highlights-container {
+    background: white;
+    border: 1px solid #dddbda;
+    border-radius: 0.25rem;
+    overflow: hidden;
+}
+
+.record-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+    border-bottom: 2px solid #dddbda;
+}
+
+.icon-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.record-title {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-width: 0;
+}
+
+.heading {
+    font-size: 0.75rem;
+    line-height: 1.25rem;
+    font-weight: 400;
+}
+
+.record-link {
+    appearance: none;
+    background: transparent;
+    border: 0;
+    padding: 0;
+    margin: 0;
+    color: inherit;
+    font-family: inherit;
+    font-size: 1rem;
+    line-height: 1.25rem;
+    font-weight: 700;
+    text-align: left;
+    text-decoration: underline;
+    cursor: pointer;
+    overflow-wrap: break-word;
+    word-break: normal;
+}
+
+.record-link:hover,
+.record-link:focus {
+    text-decoration-thickness: 2px;
+}
+
+.highlights-body {
+    padding: 1rem;
+}
+
+.field-grid {
+    display: grid;
+    grid-template-columns: repeat(
+        auto-fit,
+        minmax(min(12rem, 100%), 1fr)
+    );
+    column-gap: 2rem;
+    row-gap: 1rem;
+}
+
+.field {
+    min-width: 0;
+}
+
+.field-label {
+    font-size: 0.75rem;
+    line-height: 1rem;
+    color: #3e3e3c;
+    overflow-wrap: break-word;
+    word-break: normal;
+}
+
+.field-value {
+    margin-top: 0.125rem;
+    font-size: 1rem;
+    line-height: 1.25rem;
+    font-weight: 700;
+    overflow-wrap: break-word;
+    word-break: normal;
+}
+
+.message {
+    padding: 1rem;
+    color: #3e3e3c;
+}

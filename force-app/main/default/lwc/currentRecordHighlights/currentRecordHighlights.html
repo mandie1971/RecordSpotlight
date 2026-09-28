@@ -1,0 +1,110 @@
+<template>
+    <div class="highlights-container" style={containerStyle}>
+
+        <template if:true={hasRecord}>
+            <div class="record-header" style={headerStyle}>
+
+                <template if:true={hasIcon}>
+                    <div class="icon-container">
+                        <lightning-icon
+                            icon-name={iconName}
+                            size="medium"
+                            variant="inverse"
+                            alternative-text="">
+                        </lightning-icon>
+                    </div>
+                </template>
+
+                <div class="record-title">
+
+                    <template if:true={hasHeading}>
+                        <div class="heading">
+                            {heading}
+                        </div>
+                    </template>
+
+                    <button
+                        class="record-link"
+                        onclick={handleRecordClick}>
+                        {record.recordName}
+                    </button>
+
+                </div>
+            </div>
+
+            <div class="highlights-body" style={bodyStyle}>
+                <div class="field-grid">
+
+                    <template
+                        for:each={displayFields}
+                        for:item="field">
+
+                        <div
+                            key={field.apiName}
+                            class="field">
+
+                            <div class="field-label">
+                                {field.label}
+                            </div>
+
+                            <div class="field-value">
+
+                                <template if:true={field.isLink}>
+                                    <lightning-formatted-url
+                                        value={field.linkUrl}
+                                        label={field.linkLabel}
+                                        target="_self">
+                                    </lightning-formatted-url>
+                                </template>
+
+                                <template if:true={field.isPercent}>
+                                    <lightning-formatted-number
+                                        value={field.displayValue}
+                                        format-style="percent"
+                                        minimum-fraction-digits="2"
+                                        maximum-fraction-digits="2">
+                                    </lightning-formatted-number>
+                                </template>
+
+                                <template if:true={field.isCurrency}>
+                                    <lightning-formatted-number
+                                        value={field.displayValue}
+                                        format-style="currency">
+                                    </lightning-formatted-number>
+                                </template>
+
+                                <template if:true={field.isNumber}>
+                                    <lightning-formatted-number
+                                        value={field.displayValue}>
+                                    </lightning-formatted-number>
+                                </template>
+
+                                <template if:true={field.isText}>
+                                    <lightning-formatted-text
+                                        value={field.displayValue}>
+                                    </lightning-formatted-text>
+                                </template>
+
+                            </div>
+                        </div>
+
+                    </template>
+
+                </div>
+            </div>
+        </template>
+
+        <template if:true={hasError}>
+            <div class="message">
+                {errorMessage}
+            </div>
+        </template>
+
+        <template if:true={showNoRecord}>
+            <div class="message">
+                No current record found.
+            </div>
+        </template>
+
+    </div>
+</template>
