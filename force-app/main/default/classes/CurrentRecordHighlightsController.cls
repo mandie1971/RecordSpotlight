@@ -1,42 +1,31 @@
-/*
- * CURRENT RECORD HIGHLIGHTS
- *
- * Reusable controller for displaying selected fields from a configured
- * current record.
- *
- * CONFIGURATION IS PROVIDED BY THE LWC:
- * - Object API Name
- * - Checkbox or Formula (Checkbox) field that identifies the current record
- * - Field Set that determines which fields are displayed
- * - Optional Parent Lookup Field used to restrict the current record
- *   to the record page where the component is displayed
- */
 public with sharing class CurrentRecordHighlightsController {
 
     public class HighlightField {
-        @AuraEnabled public String label;
-        @AuraEnabled public String apiName;
-        @AuraEnabled public String dataType;
-        @AuraEnabled public Object value;
+        @AuraEnabled
+        public String apiName;
 
-        public HighlightField(
-            String label,
-            String apiName,
-            String dataType,
-            Object value
-        ) {
-            this.label = label;
-            this.apiName = apiName;
-            this.dataType = dataType;
-            this.value = value;
-        }
+        @AuraEnabled
+        public String label;
+
+        @AuraEnabled
+        public String dataType;
+
+        @AuraEnabled
+        public Object value;
     }
 
     public class HighlightResult {
-        @AuraEnabled public Id recordId;
-        @AuraEnabled public String recordName;
-        @AuraEnabled public String objectApiName;
-        @AuraEnabled public List<HighlightField> fields;
+        @AuraEnabled
+        public Id recordId;
+
+        @AuraEnabled
+        public String recordName;
+
+        @AuraEnabled
+        public String objectApiName;
+
+        @AuraEnabled
+        public List<HighlightField> fields;
     }
 
     @AuraEnabled(cacheable=true)
@@ -55,13 +44,13 @@ public with sharing class CurrentRecordHighlightsController {
 
         if (String.isBlank(currentRecordFieldApiName)) {
             throw new AuraHandledException(
-                'Checkbox Field That Determines Current Record is required.'
+                'Current Record Field API Name is required.'
             );
         }
 
         if (String.isBlank(fieldSetApiName)) {
             throw new AuraHandledException(
-                'Field Set to Display is required.'
+                'Field Set API Name is required.'
             );
         }
 
@@ -77,27 +66,36 @@ public with sharing class CurrentRecordHighlightsController {
         Schema.DescribeSObjectResult objectDescribe =
             globalDescribe.get(objectApiName).getDescribe();
 
-        Map<String, Schema.SObjectField> objectFields =
+        Map<String, Schema.SObjectField> fieldMap =
             objectDescribe.fields.getMap();
 
-        if (!objectFields.containsKey(currentRecordFieldApiName)) {
+        if (!fieldMap.containsKey(currentRecordFieldApiName)) {
             throw new AuraHandledException(
-                objectApiName +
-                ' does not contain a field named ' +
-                currentRecordFieldApiName + '.'
+                'Current record field not found: ' +
+                currentRecordFieldApiName
             );
         }
 
         Schema.DescribeFieldResult currentFieldDescribe =
-            objectFields.get(currentRecordFieldApiName).getDescribe();
+            fieldMap
+                .get(currentRecordFieldApiName)
+                .getDescribe();
 
         if (
             currentFieldDescribe.getType() !=
             Schema.DisplayType.BOOLEAN
         ) {
             throw new AuraHandledException(
-                currentRecordFieldApiName +
-                ' must be a Checkbox or Formula (Checkbox).'
+                'Current record field must be a Checkbox or Formula (Checkbox).'
+            );
+        }
+
+        Map<String, Schema.FieldSet> fieldSetMap =
+            objectDescribe.fieldSets.getMap();
+
+        if (!fieldSetMap.containsKey(fieldSetApiName)) {
+            throw new AuraHandledException(
+                'Field Set not found: ' + fieldSetApiName
             );
         }
 
@@ -105,73 +103,58 @@ public with sharing class CurrentRecordHighlightsController {
             !String.isBlank(parentLookupFieldApiName);
 
         if (filterByParent) {
-            if (parentRecordId == null) {
+            if (!fieldMap.containsKey(parentLookupFieldApiName)) {
                 throw new AuraHandledException(
-                    'A Parent Record Id is required when Parent Lookup Field is configured.'
-                );
-            }
-
-            if (!objectFields.containsKey(parentLookupFieldApiName)) {
-                throw new AuraHandledException(
-                    objectApiName +
-                    ' does not contain a field named ' +
-                    parentLookupFieldApiName + '.'
+                    'Parent lookup field not found: ' +
+                    parentLookupFieldApiName
                 );
             }
 
             Schema.DescribeFieldResult parentFieldDescribe =
-                objectFields.get(parentLookupFieldApiName).getDescribe();
+                fieldMap
+                    .get(parentLookupFieldApiName)
+                    .getDescribe();
 
             if (
                 parentFieldDescribe.getType() !=
                 Schema.DisplayType.REFERENCE
             ) {
                 throw new AuraHandledException(
-                    parentLookupFieldApiName +
-                    ' must be a Lookup or Master-Detail field.'
+                    'Parent Lookup Field must be a Lookup or Master-Detail field.'
+                );
+            }
+
+            if (parentRecordId == null) {
+                throw new AuraHandledException(
+                    'A parent record Id is required when Parent Lookup Field is configured.'
                 );
             }
         }
 
-        Map<String, Schema.FieldSet> fieldSets =
-            objectDescribe.fieldSets.getMap();
-
-        if (!fieldSets.containsKey(fieldSetApiName)) {
-            throw new AuraHandledException(
-                objectApiName +
-                ' does not contain a Field Set named ' +
-                fieldSetApiName + '.'
-            );
-        }
-
         Schema.FieldSet fieldSet =
-            fieldSets.get(fieldSetApiName);
+            fieldSetMap.get(fieldSetApiName);
 
         List<Schema.FieldSetMember> fieldSetMembers =
             fieldSet.getFields();
 
+        Set<String> queryFieldSet =
+            new Set<String>();
+
+        queryFieldSet.add('Id');
+        queryFieldSet.add('Name');
+
+        for (
+            Schema.FieldSetMember member :
+            fieldSetMembers
+        ) {
+            queryFieldSet.add(member.getFieldPath());
+        }
+
         List<String> queryFields =
-            new List<String>{ 'Id' };
+            new List<String>();
 
-        Boolean hasNameField =
-            objectFields.containsKey('Name');
-
-        if (hasNameField) {
-            queryFields.add('Name');
-        }
-
-        for (Schema.FieldSetMember member : fieldSetMembers) {
-            String fieldPath =
-                member.getFieldPath();
-
-            if (
-                !fieldPath.contains('.') &&
-                objectFields.containsKey(fieldPath) &&
-                !queryFields.contains(fieldPath)
-            ) {
-                queryFields.add(fieldPath);
-            }
-        }
+        queryFields.addAll(queryFieldSet);
+        queryFields.sort();
 
         String soql =
             'SELECT ' +
@@ -189,13 +172,30 @@ public with sharing class CurrentRecordHighlightsController {
                 ' = :parentRecordId';
         }
 
-        soql += ' LIMIT 1';
+        /*
+         * Retrieve at most two records.
+         *
+         * We only need to know whether there are zero, one,
+         * or multiple matching records. Returning an arbitrary
+         * record when more than one is current could present
+         * incorrect information to the user.
+         */
+        soql += ' LIMIT 2';
 
         List<SObject> records =
             Database.query(soql);
 
         if (records.isEmpty()) {
             return null;
+        }
+
+        if (records.size() > 1) {
+            throw new AuraHandledException(
+                'Multiple current records found. ' +
+                'Make sure only one record evaluates to TRUE ' +
+                'for the configured current-record field ' +
+                'within this context.'
+            );
         }
 
         SObject currentRecord =
@@ -207,39 +207,41 @@ public with sharing class CurrentRecordHighlightsController {
         result.recordId =
             (Id) currentRecord.get('Id');
 
+        result.recordName =
+            String.valueOf(
+                currentRecord.get('Name')
+            );
+
         result.objectApiName =
             objectApiName;
-
-        result.recordName =
-            hasNameField
-                ? String.valueOf(currentRecord.get('Name'))
-                : objectDescribe.getLabel();
 
         result.fields =
             new List<HighlightField>();
 
-        for (Schema.FieldSetMember member : fieldSetMembers) {
-            String fieldPath =
+        for (
+            Schema.FieldSetMember member :
+            fieldSetMembers
+        ) {
+            HighlightField field =
+                new HighlightField();
+
+            field.apiName =
                 member.getFieldPath();
 
-            if (
-                fieldPath.contains('.') ||
-                !objectFields.containsKey(fieldPath)
-            ) {
-                continue;
-            }
+            field.label =
+                member.getLabel();
 
-            Schema.DescribeFieldResult fieldDescribe =
-                objectFields.get(fieldPath).getDescribe();
+            field.dataType =
+                String.valueOf(
+                    member.getType()
+                );
 
-            result.fields.add(
-                new HighlightField(
-                    member.getLabel(),
-                    fieldPath,
-                    String.valueOf(fieldDescribe.getType()),
-                    currentRecord.get(fieldPath)
-                )
-            );
+            field.value =
+                currentRecord.get(
+                    member.getFieldPath()
+                );
+
+            result.fields.add(field);
         }
 
         return result;

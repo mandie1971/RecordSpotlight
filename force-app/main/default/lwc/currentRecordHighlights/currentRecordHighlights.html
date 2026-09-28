@@ -1,7 +1,7 @@
 <template>
-    <div class="highlights-container" style={containerStyle}>
+    <template if:true={hasRecord}>
+        <div class="highlights-container" style={containerStyle}>
 
-        <template if:true={hasRecord}>
             <div class="record-header" style={headerStyle}>
 
                 <template if:true={hasIcon}>
@@ -92,19 +92,19 @@
 
                 </div>
             </div>
-        </template>
 
-        <template if:true={hasError}>
+        </div>
+    </template>
+
+    <template if:true={hasError}>
+        <div
+            class="highlights-container"
+            style={containerStyle}>
+
             <div class="message">
                 {errorMessage}
             </div>
-        </template>
 
-        <template if:true={showNoRecord}>
-            <div class="message">
-                No current record found.
-            </div>
-        </template>
-
-    </div>
+        </div>
+    </template>
 </template>

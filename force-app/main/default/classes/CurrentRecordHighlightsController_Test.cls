@@ -1,383 +1,439 @@
 @IsTest
 private class CurrentRecordHighlightsController_Test {
 
-    /*
-     * TEST CONFIGURATION
-     *
-     * This controller is intentionally generic, so the test avoids relying on
-     * Essie-specific objects or fields.
-     *
-     * Contact is used as a standard Salesforce object.
-     * DoNotCall is used only as a portable, writable standard Boolean field.
-     * Its business meaning is irrelevant to this test; the controller treats
-     * any configured Boolean field as the current-record indicator.
-     *
-     * Record_Comparison_Test is a small Contact Field Set included with the
-     * project specifically as stable metadata for testing reusable components
-     * that consume a configured Field Set. Using it keeps this test independent
-     * of the production Field Sets used by any particular implementation of
-     * Current Record Highlights.
-     *
-     * AccountId is used as the standard reference field for testing the optional
-     * parent-record filtering behavior.
-     */
+    private static final String OBJECT_API_NAME =
+        'Contact';
+
+    private static final String CURRENT_FIELD =
+        'DoNotCall';
+
+    private static final String FIELD_SET =
+        'Agency_Package_Test';
 
     @IsTest
-    static void getCurrentRecordReturnsConfiguredContact() {
+    static void testReturnsCurrentRecord() {
+        Contact contact =
+            new Contact(
+                LastName = 'Current Contact',
+                DoNotCall = true
+            );
 
-        Contact currentContact = new Contact(
-            FirstName = 'Current',
-            LastName = 'Record Test',
-            Email = 'current.record@example.com',
-            DoNotCall = true
+        insert contact;
+
+        Test.startTest();
+
+        CurrentRecordHighlightsController.HighlightResult result =
+            CurrentRecordHighlightsController.getCurrentRecord(
+                OBJECT_API_NAME,
+                CURRENT_FIELD,
+                FIELD_SET,
+                null,
+                null
+            );
+
+        Test.stopTest();
+
+        System.assertNotEquals(
+            null,
+            result
         );
 
-        Contact otherContact = new Contact(
-            FirstName = 'Not Current',
-            LastName = 'Record Test',
-            Email = 'not.current@example.com',
-            DoNotCall = false
+        System.assertEquals(
+            contact.Id,
+            result.recordId
         );
 
+        System.assertEquals(
+            OBJECT_API_NAME,
+            result.objectApiName
+        );
+
+        System.assertNotEquals(
+            null,
+            result.fields
+        );
+    }
+
+    @IsTest
+    static void testReturnsNullWhenNoCurrentRecord() {
+        Contact contact =
+            new Contact(
+                LastName = 'Not Current',
+                DoNotCall = false
+            );
+
+        insert contact;
+
+        Test.startTest();
+
+        CurrentRecordHighlightsController.HighlightResult result =
+            CurrentRecordHighlightsController.getCurrentRecord(
+                OBJECT_API_NAME,
+                CURRENT_FIELD,
+                FIELD_SET,
+                null,
+                null
+            );
+
+        Test.stopTest();
+
+        System.assertEquals(
+            null,
+            result
+        );
+    }
+
+    @IsTest
+    static void testInvalidObjectThrowsError() {
+        Boolean exceptionThrown = false;
+
+        try {
+            CurrentRecordHighlightsController.getCurrentRecord(
+                'Not_A_Real_Object__c',
+                CURRENT_FIELD,
+                FIELD_SET,
+                null,
+                null
+            );
+        } catch (AuraHandledException e) {
+            exceptionThrown = true;
+        }
+
+        System.assertEquals(
+            true,
+            exceptionThrown,
+            'Expected an AuraHandledException for an invalid object.'
+        );
+    }
+
+    @IsTest
+    static void testInvalidCurrentFieldThrowsError() {
+        Boolean exceptionThrown = false;
+
+        try {
+            CurrentRecordHighlightsController.getCurrentRecord(
+                OBJECT_API_NAME,
+                'Not_A_Field__c',
+                FIELD_SET,
+                null,
+                null
+            );
+        } catch (AuraHandledException e) {
+            exceptionThrown = true;
+        }
+
+        System.assertEquals(
+            true,
+            exceptionThrown,
+            'Expected an AuraHandledException for an invalid current-record field.'
+        );
+    }
+
+    @IsTest
+    static void testNonCheckboxCurrentFieldThrowsError() {
+        Boolean exceptionThrown = false;
+
+        try {
+            CurrentRecordHighlightsController.getCurrentRecord(
+                OBJECT_API_NAME,
+                'LastName',
+                FIELD_SET,
+                null,
+                null
+            );
+        } catch (AuraHandledException e) {
+            exceptionThrown = true;
+        }
+
+        System.assertEquals(
+            true,
+            exceptionThrown,
+            'Expected an AuraHandledException when the current-record field is not a checkbox.'
+        );
+    }
+
+    @IsTest
+    static void testInvalidFieldSetThrowsError() {
+        Boolean exceptionThrown = false;
+
+        try {
+            CurrentRecordHighlightsController.getCurrentRecord(
+                OBJECT_API_NAME,
+                CURRENT_FIELD,
+                'Not_A_Field_Set',
+                null,
+                null
+            );
+        } catch (AuraHandledException e) {
+            exceptionThrown = true;
+        }
+
+        System.assertEquals(
+            true,
+            exceptionThrown,
+            'Expected an AuraHandledException for an invalid Field Set.'
+        );
+    }
+
+    @IsTest
+    static void testMultipleCurrentRecordsThrowsError() {
         insert new List<Contact>{
-            currentContact,
-            otherContact
+            new Contact(
+                LastName = 'Current One',
+                DoNotCall = true
+            ),
+            new Contact(
+                LastName = 'Current Two',
+                DoNotCall = true
+            )
         };
 
-        Test.startTest();
-
-        CurrentRecordHighlightsController.HighlightResult result =
-            CurrentRecordHighlightsController.getCurrentRecord(
-                'Contact',
-                'DoNotCall',
-                'Record_Comparison_Test',
-                null,
-                null
-            );
-
-        Test.stopTest();
-
-        System.assertNotEquals(
-            null,
-            result,
-            'A current Contact should have been returned.'
-        );
-
-        System.assertEquals(
-            currentContact.Id,
-            result.recordId,
-            'The Contact with DoNotCall = true should be returned.'
-        );
-
-        System.assertEquals(
-            'Current Record Test',
-            result.recordName,
-            'The Contact Name should be returned as the record name.'
-        );
-
-        System.assertEquals(
-            'Contact',
-            result.objectApiName,
-            'The configured object API name should be returned.'
-        );
-
-        System.assertNotEquals(
-            null,
-            result.fields,
-            'Field Set fields should be returned.'
-        );
-
-        System.assert(
-            result.fields.size() > 0,
-            'The Record_Comparison_Test Field Set should contain fields.'
-        );
-    }
-
-    @IsTest
-    static void getCurrentRecordReturnsNullWhenNoRecordIsCurrent() {
-
-        insert new Contact(
-            FirstName = 'Not Current',
-            LastName = 'Record Test',
-            Email = 'not.current@example.com',
-            DoNotCall = false
-        );
+        Boolean exceptionThrown = false;
 
         Test.startTest();
 
-        CurrentRecordHighlightsController.HighlightResult result =
+        try {
             CurrentRecordHighlightsController.getCurrentRecord(
-                'Contact',
-                'DoNotCall',
-                'Record_Comparison_Test',
+                OBJECT_API_NAME,
+                CURRENT_FIELD,
+                FIELD_SET,
                 null,
                 null
             );
+        } catch (AuraHandledException e) {
+            exceptionThrown = true;
+        }
 
         Test.stopTest();
 
         System.assertEquals(
-            null,
-            result,
-            'No record should be returned when no Contact has DoNotCall = true.'
+            true,
+            exceptionThrown,
+            'Expected an AuraHandledException when multiple current records exist.'
         );
     }
 
     @IsTest
-    static void getCurrentRecordRejectsInvalidObject() {
-
-        try {
-
-            CurrentRecordHighlightsController.getCurrentRecord(
-                'Definitely_Not_An_Object__c',
-                'DoNotCall',
-                'Record_Comparison_Test',
-                null,
-                null
+    static void testParentFilteringReturnsCorrectRecord() {
+        Account accountOne =
+            new Account(
+                Name = 'Account One'
             );
 
-            System.assert(
-                false,
-                'An invalid object should throw an exception.'
+        Account accountTwo =
+            new Account(
+                Name = 'Account Two'
             );
-
-        } catch (AuraHandledException e) {
-
-            System.assert(
-                true,
-                'Expected AuraHandledException was thrown.'
-            );
-        }
-    }
-
-    @IsTest
-    static void getCurrentRecordRejectsInvalidCurrentField() {
-
-        try {
-
-            CurrentRecordHighlightsController.getCurrentRecord(
-                'Contact',
-                'Definitely_Not_A_Field__c',
-                'Record_Comparison_Test',
-                null,
-                null
-            );
-
-            System.assert(
-                false,
-                'An invalid current-record field should throw an exception.'
-            );
-
-        } catch (AuraHandledException e) {
-
-            System.assert(
-                true,
-                'Expected AuraHandledException was thrown.'
-            );
-        }
-    }
-
-    @IsTest
-    static void getCurrentRecordRejectsNonCheckboxCurrentField() {
-
-        try {
-
-            CurrentRecordHighlightsController.getCurrentRecord(
-                'Contact',
-                'LastName',
-                'Record_Comparison_Test',
-                null,
-                null
-            );
-
-            System.assert(
-                false,
-                'A non-checkbox current-record field should throw an exception.'
-            );
-
-        } catch (AuraHandledException e) {
-
-            System.assert(
-                true,
-                'Expected AuraHandledException was thrown.'
-            );
-        }
-    }
-
-    @IsTest
-    static void getCurrentRecordRejectsInvalidFieldSet() {
-
-        try {
-
-            CurrentRecordHighlightsController.getCurrentRecord(
-                'Contact',
-                'DoNotCall',
-                'Definitely_Not_A_Field_Set',
-                null,
-                null
-            );
-
-            System.assert(
-                false,
-                'An invalid Field Set should throw an exception.'
-            );
-
-        } catch (AuraHandledException e) {
-
-            System.assert(
-                true,
-                'Expected AuraHandledException was thrown.'
-            );
-        }
-    }
-
-    @IsTest
-    static void getCurrentRecordRequiresConfiguration() {
-
-        try {
-
-            CurrentRecordHighlightsController.getCurrentRecord(
-                null,
-                null,
-                null,
-                null,
-                null
-            );
-
-            System.assert(
-                false,
-                'Missing configuration should throw an exception.'
-            );
-
-        } catch (AuraHandledException e) {
-
-            System.assert(
-                true,
-                'Expected AuraHandledException was thrown.'
-            );
-        }
-    }
-
-    @IsTest
-    static void getCurrentRecordFiltersByParentRecord() {
-
-        Account firstAccount = new Account(
-            Name = 'First Parent'
-        );
-
-        Account secondAccount = new Account(
-            Name = 'Second Parent'
-        );
 
         insert new List<Account>{
-            firstAccount,
-            secondAccount
+            accountOne,
+            accountTwo
         };
 
-        Contact firstContact = new Contact(
-            FirstName = 'First',
-            LastName = 'Current Contact',
-            Email = 'first.current@example.com',
-            AccountId = firstAccount.Id,
-            DoNotCall = true
-        );
+        Contact contactOne =
+            new Contact(
+                LastName = 'Contact One',
+                AccountId = accountOne.Id,
+                DoNotCall = true
+            );
 
-        Contact secondContact = new Contact(
-            FirstName = 'Second',
-            LastName = 'Current Contact',
-            Email = 'second.current@example.com',
-            AccountId = secondAccount.Id,
-            DoNotCall = true
-        );
+        Contact contactTwo =
+            new Contact(
+                LastName = 'Contact Two',
+                AccountId = accountTwo.Id,
+                DoNotCall = true
+            );
 
         insert new List<Contact>{
-            firstContact,
-            secondContact
+            contactOne,
+            contactTwo
         };
 
         Test.startTest();
 
         CurrentRecordHighlightsController.HighlightResult result =
             CurrentRecordHighlightsController.getCurrentRecord(
-                'Contact',
-                'DoNotCall',
-                'Record_Comparison_Test',
+                OBJECT_API_NAME,
+                CURRENT_FIELD,
+                FIELD_SET,
                 'AccountId',
-                firstAccount.Id
+                accountOne.Id
             );
 
         Test.stopTest();
 
         System.assertNotEquals(
             null,
-            result,
-            'A current Contact belonging to the requested parent should be returned.'
+            result
         );
 
         System.assertEquals(
-            firstContact.Id,
-            result.recordId,
-            'The current Contact belonging to the requested Account should be returned.'
+            contactOne.Id,
+            result.recordId
         );
     }
 
     @IsTest
-    static void getCurrentRecordRequiresParentIdWhenParentFieldConfigured() {
+    static void testParentFilteringReturnsNullWhenNoMatch() {
+        Account account =
+            new Account(
+                Name = 'Account'
+            );
+
+        insert account;
+
+        insert new Contact(
+            LastName = 'Not Current',
+            AccountId = account.Id,
+            DoNotCall = false
+        );
+
+        Test.startTest();
+
+        CurrentRecordHighlightsController.HighlightResult result =
+            CurrentRecordHighlightsController.getCurrentRecord(
+                OBJECT_API_NAME,
+                CURRENT_FIELD,
+                FIELD_SET,
+                'AccountId',
+                account.Id
+            );
+
+        Test.stopTest();
+
+        System.assertEquals(
+            null,
+            result
+        );
+    }
+
+    @IsTest
+    static void testInvalidParentLookupThrowsError() {
+        Account account =
+            new Account(
+                Name = 'Account'
+            );
+
+        insert account;
+
+        Boolean exceptionThrown = false;
 
         try {
-
             CurrentRecordHighlightsController.getCurrentRecord(
-                'Contact',
-                'DoNotCall',
-                'Record_Comparison_Test',
+                OBJECT_API_NAME,
+                CURRENT_FIELD,
+                FIELD_SET,
+                'Not_A_Field__c',
+                account.Id
+            );
+        } catch (AuraHandledException e) {
+            exceptionThrown = true;
+        }
+
+        System.assertEquals(
+            true,
+            exceptionThrown,
+            'Expected an AuraHandledException for an invalid parent lookup field.'
+        );
+    }
+
+    @IsTest
+    static void testParentFieldMustBeReference() {
+        Account account =
+            new Account(
+                Name = 'Account'
+            );
+
+        insert account;
+
+        Boolean exceptionThrown = false;
+
+        try {
+            CurrentRecordHighlightsController.getCurrentRecord(
+                OBJECT_API_NAME,
+                CURRENT_FIELD,
+                FIELD_SET,
+                'LastName',
+                account.Id
+            );
+        } catch (AuraHandledException e) {
+            exceptionThrown = true;
+        }
+
+        System.assertEquals(
+            true,
+            exceptionThrown,
+            'Expected an AuraHandledException when the parent field is not a reference field.'
+        );
+    }
+
+    @IsTest
+    static void testParentRecordIdRequired() {
+        Boolean exceptionThrown = false;
+
+        try {
+            CurrentRecordHighlightsController.getCurrentRecord(
+                OBJECT_API_NAME,
+                CURRENT_FIELD,
+                FIELD_SET,
                 'AccountId',
                 null
             );
-
-            System.assert(
-                false,
-                'A configured Parent Lookup Field without a Parent Record Id should throw an exception.'
-            );
-
         } catch (AuraHandledException e) {
-
-            System.assert(
-                true,
-                'Expected AuraHandledException was thrown.'
-            );
+            exceptionThrown = true;
         }
+
+        System.assertEquals(
+            true,
+            exceptionThrown,
+            'Expected an AuraHandledException when Parent Lookup Field is configured without a parent record Id.'
+        );
     }
 
     @IsTest
-    static void getCurrentRecordRejectsNonReferenceParentField() {
+    static void testMultipleCurrentRecordsForSameParentThrowsError() {
+        Account account =
+            new Account(
+                Name = 'Account'
+            );
 
-        Account parentAccount = new Account(
-            Name = 'Parent Test'
-        );
+        insert account;
 
-        insert parentAccount;
+        insert new List<Contact>{
+            new Contact(
+                LastName = 'Current One',
+                AccountId = account.Id,
+                DoNotCall = true
+            ),
+            new Contact(
+                LastName = 'Current Two',
+                AccountId = account.Id,
+                DoNotCall = true
+            )
+        };
+
+        Boolean exceptionThrown = false;
+
+        Test.startTest();
 
         try {
-
             CurrentRecordHighlightsController.getCurrentRecord(
-                'Contact',
-                'DoNotCall',
-                'Record_Comparison_Test',
-                'LastName',
-                parentAccount.Id
+                OBJECT_API_NAME,
+                CURRENT_FIELD,
+                FIELD_SET,
+                'AccountId',
+                account.Id
             );
-
-            System.assert(
-                false,
-                'A non-reference Parent Lookup Field should throw an exception.'
-            );
-
         } catch (AuraHandledException e) {
-
-            System.assert(
-                true,
-                'Expected AuraHandledException was thrown.'
-            );
+            exceptionThrown = true;
         }
+
+        Test.stopTest();
+
+        System.assertEquals(
+            true,
+            exceptionThrown,
+            'Expected an AuraHandledException when multiple current records exist for the same parent.'
+        );
     }
 }

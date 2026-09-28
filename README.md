@@ -79,6 +79,7 @@ The component then displays the Contact marked as Primary Contact for the Accoun
 - Optional heading and Lightning icon
 - Optional accent color with automatically generated body and divider colors
 - Responsive field layout based on available component width
+- Detects conflicting current records rather than choosing one arbitrarily
 - No object-specific production logic
 
 ## Global vs. Parent-Aware
@@ -136,9 +137,14 @@ AND(
 )
 ```
 
-Your configuration should identify **one record within the relevant scope**.
+> [!IMPORTANT]
+> Your configuration must allow **only one record within the relevant scope** to evaluate to `TRUE`.
+>
+> This applies whether the determining field is a formula or a manually maintained checkbox. If more than one record evaluates to `TRUE`, Current Record Highlights displays a configuration error instead of choosing a record arbitrarily.
 
-If multiple records match, the controller returns one matching record. Design the determining field and parent relationship so only one record should evaluate as current.
+For a global component, that means only one matching record across the configured object.
+
+For a parent-aware component, each parent can have its own current record — but only one matching child record for that parent.
 
 ## Field Set
 
@@ -288,6 +294,16 @@ Verify:
 3. A record evaluates to `TRUE`.
 4. The running user has access to the configured metadata.
 
+### Multiple current records found
+
+More than one record is evaluating to `TRUE` within the same scope.
+
+If the current-record field is a **formula**, check the formula logic and the underlying data to make sure the valid periods or conditions cannot overlap.
+
+If the field is a **manually maintained checkbox**, make sure the process for marking a new record current also clears the previous current record.
+
+The component deliberately refuses to choose between multiple matches because doing so could display incorrect information.
+
 ### Wrong record appears on a Record Page
 
 If "current" should be specific to the page record, configure **Parent Lookup Field**.
@@ -324,6 +340,10 @@ Dynamic Schema Validation
       ↓
 Dynamic SOQL
       ↓
+0 matches → No current record
+1 match   → Display record
+2 matches → Configuration error
+      ↓
 Current Record + Field Set Metadata
       ↓
 Responsive Highlights
@@ -332,6 +352,8 @@ Responsive Highlights
 The LWC loads the record imperatively so both Record Page context and global Home/App Page use work reliably.
 
 The Apex controller validates the configured object, checkbox, Field Set, and optional parent lookup before constructing the query. A configured parent field must be a Salesforce `REFERENCE` field.
+
+The query retrieves at most two matching records. This is enough to distinguish between no current record, exactly one current record, and an invalid configuration containing multiple current records.
 
 ## Project Structure
 
@@ -381,7 +403,7 @@ Released under the MIT License. See `LICENSE`.
 
 ## Author
 
-Created by **mandie McDougal**  
+Created by **mandie mcdougal**  
 **agency llc**
 
 **Empowered. By Design.**

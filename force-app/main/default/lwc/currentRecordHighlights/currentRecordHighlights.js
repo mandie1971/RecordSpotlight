@@ -87,15 +87,6 @@ export default class CurrentRecordHighlights extends NavigationMixin(LightningEl
             return;
         }
 
-        /*
-         * A parent lookup is optional.
-         *
-         * When one is configured, the component must be running in a
-         * record context so Salesforce can provide the parent record Id.
-         *
-         * When no parent lookup is configured, null is deliberately sent
-         * to Apex. This supports global use on Home and App pages.
-         */
         if (
             this._parentLookupFieldApiName &&
             !this._recordId
@@ -119,11 +110,6 @@ export default class CurrentRecordHighlights extends NavigationMixin(LightningEl
                     this._recordId || null
             });
 
-            /*
-             * App Builder can set several public properties in rapid
-             * succession. Ignore an older response if a newer request
-             * has already started.
-             */
             if (requestId !== this.loadRequestId) {
                 return;
             }
@@ -146,10 +132,6 @@ export default class CurrentRecordHighlights extends NavigationMixin(LightningEl
 
     get hasError() {
         return !!this.error;
-    }
-
-    get showNoRecord() {
-        return !this.record && !this.error;
     }
 
     get hasHeading() {
