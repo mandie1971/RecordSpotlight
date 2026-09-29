@@ -14,6 +14,34 @@ Here, Grace Hopper is getting the recognition she deserves. 💜
 
 ![Record Spotlight showing Grace Hopper as Employee of the Month on a Salesforce Home page](images/record-spotlight-home-page.png)
 
+## Why Record Spotlight?
+
+Salesforce's related-record patterns generally start with the record you're viewing and reach **up to a related parent record**.
+
+Record Spotlight works differently. It finds the record that matters **right now**.
+
+### Anywhere
+
+On a Home Page or App Page, Record Spotlight can surface a current record with **no relationship or page record at all**.
+
+For example:
+
+- Employee of the Month
+- Current fiscal year
+- Active fundraising period
+- Current program cycle
+- Featured announcement record
+
+### Down to a Child Record
+
+On a Record Page, Record Spotlight can find the current **child record related to the record you're viewing**.
+
+For example, a Program record could display its current Program Cycle rather than requiring users to navigate through a related list to find it.
+
+That makes Record Spotlight useful when the important record isn't the record you're on — and isn't necessarily its parent.
+
+## Examples
+
 ### Context-Aware Record Page
 
 On a Record Page, Record Spotlight can find the current child record related to the record being viewed.
@@ -53,6 +81,8 @@ Use it for things like:
 - Current grant period
 - Active membership
 - Current project phase
+- Employee of the Month
+- Featured record
 
 For example, the component can use `Contact.Primary_Contact__c` on an Account page:
 
@@ -79,6 +109,8 @@ The component then displays the Contact marked as Primary Contact for the Accoun
 - Checkbox or Formula (Checkbox) determines the record
 - Field Set determines the displayed fields and their order
 - Optional parent-aware filtering on Record Pages
+- Can surface child records rather than only parent records
+- Global display requires no record relationship
 - Clickable record navigation
 - Text, number, currency, and percent formatting
 - Salesforce formula hyperlinks
@@ -99,6 +131,8 @@ The component finds a record where:
 ```text
 Current__c = TRUE
 ```
+
+No page record or relationship is required.
 
 This is useful on Home Pages and App Pages.
 
@@ -162,6 +196,7 @@ The Field Set controls:
 - the order in which they appear
 
 Admins can therefore change the displayed information without modifying the LWC.
+
 > **Note:** Rich Text Area fields are displayed as text rather than rendered HTML. Because their underlying HTML markup may be visible, Rich Text Area fields are not recommended for the display Field Set.
 
 ## Styling
@@ -237,6 +272,29 @@ HYPERLINK(
 
 ## Installation
 
+### Install the Released Package
+
+Record Spotlight v1.0.0 is available as a released Salesforce unlocked package.
+
+**Production / Developer Edition:**
+
+https://login.salesforce.com/packaging/installPackage.apexp?p0=04tfj000000am1JAAQ
+
+**Sandbox:**
+
+https://test.salesforce.com/packaging/installPackage.apexp?p0=04tfj000000am1JAAQ
+
+**Salesforce CLI:**
+
+```bash
+sf package install \
+  --package 04tfj000000am1JAAQ \
+  --target-org YOUR_ORG_ALIAS \
+  --wait 30
+```
+
+### Deploy from Source
+
 Clone or download this repository.
 
 Authenticate the target Salesforce org with Salesforce CLI, then deploy:
@@ -260,35 +318,28 @@ Users need access to:
 - the parent lookup field when parent-aware filtering is used
 - `RecordSpotlightController`
 
-Grant Apex Class Access through the appropriate Profile or Permission Set.
+The included `Record_Spotlight` Permission Set provides Apex Class Access to the Record Spotlight controller.
 
-Normal Salesforce object and field security still applies.
+Normal Salesforce object and field security still applies to the records and fields configured for display.
 
-## Test Metadata
+## Package Contents
 
-The repository includes:
+The released package includes:
 
-```text
-Contact.Agency_Package_Test
-```
+- `recordSpotlight` — Lightning Web Component
+- `RecordSpotlightController` — Apex controller
+- `RecordSpotlightController_Test` — Apex test coverage
+- `Record_Spotlight` — Permission Set
+- `Contact.Agency_Package_Test` — shared Field Set used by packaged Apex tests
+- `Contact.Agency_Package_Test_Current__c` — shared Checkbox used by packaged Apex tests
 
-This Field Set exists only to support the included Apex tests without requiring implementation-specific custom objects.
+### Test Metadata
 
-### Contact Do Not Call Access
+The Contact Field Set and checkbox are test fixtures required for package creation and validation.
 
-The test fixture uses the standard Contact `DoNotCall` checkbox.
+They are **not used by Record Spotlight at runtime** and should not be deleted from an installed package.
 
-The deploying user must have field-level access to **Contact → Do Not Call** when running the included tests.
-
-If deployment reports:
-
-```text
-Operation failed due to fields being inaccessible on Sobject Contact
-```
-
-verify the deploying user's access to that standard field.
-
-This is a test-fixture requirement, not a runtime dependency of Record Spotlight.
+During 2GP package-version creation, the project uses `apexTestAccess` to assign the `Record_Spotlight` Permission Set to the package-build test user. This provides the field access required by the packaged Apex tests.
 
 ## Troubleshooting
 
@@ -353,7 +404,7 @@ Dynamic SOQL
       ↓
 Current Record + Field Set Metadata
       ↓
-Responsive Highlights
+Responsive Spotlight
 ```
 
 The LWC loads the record imperatively so both Record Page context and global Home/App Page use work reliably.
@@ -377,17 +428,23 @@ force-app/main/default/
 │       ├── recordSpotlight.html
 │       ├── recordSpotlight.js
 │       └── recordSpotlight.js-meta.xml
-└── objects/
-    └── Contact/
-        └── fieldSets/
-            └── Agency_Package_Test.fieldSet-meta.xml
+├── objects/
+│   └── Contact/
+│       ├── fieldSets/
+│       │   └── Agency_Package_Test.fieldSet-meta.xml
+│       └── fields/
+│           └── Agency_Package_Test_Current__c.field-meta.xml
+└── permissionsets/
+    └── Record_Spotlight.permissionset-meta.xml
 ```
 
 ## Compatibility
 
-Built with Salesforce API Version **65.0** for Lightning Experience.
+Built with Salesforce API Version **67.0** for Lightning Experience.
 
 The source has been successfully deployed and tested across unrelated Salesforce orgs.
+
+Record Spotlight v1.0.0 has also been built as a Salesforce second-generation unlocked package, installed into an unrelated sandbox, functionally tested there, and promoted as a released package version.
 
 ## Design Philosophy
 

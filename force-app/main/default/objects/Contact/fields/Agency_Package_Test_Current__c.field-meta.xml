@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Agency_Package_Test_Current__c</fullName>
+    <defaultValue>false</defaultValue>
+    <description>Shared test fixture for agency llc Salesforce packages. Required by packaged Apex tests; do not delete.</description>
+    <label>Agency Package Test Current</label>
+    <trackFeedHistory>false</trackFeedHistory>
+    <type>Checkbox</type>
+</CustomField>

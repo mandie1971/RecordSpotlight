@@ -1,12 +1,25 @@
 {
   "packageDirectories": [
     {
+      "versionName": "ver 1.0",
+      "versionNumber": "1.0.0.NEXT",
       "path": "force-app",
-      "default": true
+      "default": true,
+      "package": "Record Spotlight",
+      "versionDescription": "Reusable configurable Salesforce Lightning component for surfacing the record that matters right now.",
+      "apexTestAccess": {
+        "permissionSets": [
+          "Record_Spotlight"
+        ]
+      }
     }
   ],
   "name": "RecordSpotlight",
   "namespace": "",
   "sfdcLoginUrl": "https://login.salesforce.com",
-  "sourceApiVersion": "67.0"
+  "sourceApiVersion": "67.0",
+  "packageAliases": {
+    "Record Spotlight": "0Hofj0000004dlxCAA",
+    "Record Spotlight@1.0.0-1": "04tfj000000am1JAAQ"
+  }
 }

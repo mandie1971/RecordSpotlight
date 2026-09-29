@@ -5,7 +5,7 @@ private class RecordSpotlightController_Test {
         'Contact';
 
     private static final String CURRENT_FIELD =
-        'DoNotCall';
+        'Agency_Package_Test_Current__c';
 
     private static final String FIELD_SET =
         'Agency_Package_Test';
@@ -15,7 +15,7 @@ private class RecordSpotlightController_Test {
         Contact contact =
             new Contact(
                 LastName = 'Current Contact',
-                DoNotCall = true
+                Agency_Package_Test_Current__c = true
             );
 
         insert contact;
@@ -59,7 +59,7 @@ private class RecordSpotlightController_Test {
         Contact contact =
             new Contact(
                 LastName = 'Not Current',
-                DoNotCall = false
+                Agency_Package_Test_Current__c = false
             );
 
         insert contact;
@@ -180,11 +180,11 @@ private class RecordSpotlightController_Test {
         insert new List<Contact>{
             new Contact(
                 LastName = 'Current One',
-                DoNotCall = true
+                Agency_Package_Test_Current__c = true
             ),
             new Contact(
                 LastName = 'Current Two',
-                DoNotCall = true
+                Agency_Package_Test_Current__c = true
             )
         };
 
@@ -234,14 +234,14 @@ private class RecordSpotlightController_Test {
             new Contact(
                 LastName = 'Contact One',
                 AccountId = accountOne.Id,
-                DoNotCall = true
+                Agency_Package_Test_Current__c = true
             );
 
         Contact contactTwo =
             new Contact(
                 LastName = 'Contact Two',
                 AccountId = accountTwo.Id,
-                DoNotCall = true
+                Agency_Package_Test_Current__c = true
             );
 
         insert new List<Contact>{
@@ -285,7 +285,7 @@ private class RecordSpotlightController_Test {
         insert new Contact(
             LastName = 'Not Current',
             AccountId = account.Id,
-            DoNotCall = false
+            Agency_Package_Test_Current__c = false
         );
 
         Test.startTest();
@@ -403,12 +403,12 @@ private class RecordSpotlightController_Test {
             new Contact(
                 LastName = 'Current One',
                 AccountId = account.Id,
-                DoNotCall = true
+                Agency_Package_Test_Current__c = true
             ),
             new Contact(
                 LastName = 'Current Two',
                 AccountId = account.Id,
-                DoNotCall = true
+                Agency_Package_Test_Current__c = true
             )
         };
 
